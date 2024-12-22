@@ -1,18 +1,21 @@
 package com.aleksmaksprojects.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.LockModeType;
 
 import java.util.UUID;
 
 @Entity
 public class Wallet {
     @Id
-    @GeneratedValue
     private UUID id;
 
     private double balance;
+
+    public Wallet() {
+        id = UUID.randomUUID();
+    }
 
     public UUID getId() {
         return id;

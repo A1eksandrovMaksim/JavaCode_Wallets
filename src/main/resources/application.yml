@@ -1,13 +1,16 @@
 spring:
+  liquibase:
+    enabled: true
   datasource:
-    url: jdbc:postgresql://db:5432/walletdb
-    username: user
+    url: jdbc:postgresql://localhost:5432/walletdb
+    username: ext_app
     password: password
   jpa:
     hibernate:
-      ddl-auto: true
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
-  liquibase:
-    change-log: classpath:db/changelog/changelog.xml
+
+server:
+  port: 0

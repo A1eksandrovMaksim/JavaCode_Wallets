@@ -1,4 +1,4 @@
-package com.aleksmaksprojects.controller;
+package com.aleksmaksprojects.controller.pojo;
 
 import java.util.UUID;
 

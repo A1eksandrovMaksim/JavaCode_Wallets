@@ -1,5 +1,6 @@
 package com.aleksmaksprojects.controller;
 
+import com.aleksmaksprojects.controller.pojo.WalletOperationRequest;
 import com.aleksmaksprojects.service.WalletService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/wallet")
+@RequestMapping("/api/v1")
 public class WalletController {
 
     private final WalletService walletService;
@@ -16,7 +17,7 @@ public class WalletController {
         this.walletService = walletService;
     }
 
-     @PostMapping
+     @PostMapping("wallet")
      public ResponseEntity<Void> performOperation(@RequestBody WalletOperationRequest request){
         walletService.performOperation(
                 request.getWalletId(),

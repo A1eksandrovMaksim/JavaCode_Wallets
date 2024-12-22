@@ -4,25 +4,26 @@ import com.aleksmaksprojects.exception.InsufficientFundsException;
 import com.aleksmaksprojects.exception.WalletNotFoundException;
 import com.aleksmaksprojects.model.Wallet;
 import com.aleksmaksprojects.repository.WalletRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.InsufficientResourcesException;
 import java.util.UUID;
 
 @Service
 public class WalletService {
 
-    private final WalletRepository walletRepository;
-
-    public WalletService(WalletRepository walletRepository) {
-        this.walletRepository = walletRepository;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public void performOperation(UUID walletId, String operationType, double amount){
-        Wallet wallet = walletRepository.findById(walletId)
-                .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
+        Wallet wallet = entityManager.find(Wallet.class, walletId, LockModeType.PESSIMISTIC_WRITE);
+        if (wallet == null){
+            throw new WalletNotFoundException("Wallet with id " + walletId + " not found.");
+        }
 
         switch (operationType){
             case "DEPOSIT":
@@ -30,20 +31,21 @@ public class WalletService {
                 break;
             case "WITHDRAW":
                 if (wallet.getBalance() < amount){
-                    throw new InsufficientFundsException("Insufficient funds");
+                    throw new InsufficientFundsException("Insufficient funds for transaction.");
                 }
                 wallet.setBalance(wallet.getBalance() - amount);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid operation type");
+                throw new IllegalArgumentException("Operation type must be DEPOSIT or WITHDRAW.");
         }
-
-        walletRepository.save(wallet);
     }
 
+    @Transactional
     public double getBalance(UUID walletId){
-        return walletRepository.findById(walletId)
-                .orElseThrow(() -> new WalletNotFoundException("Wallet not found"))
-                .getBalance();
+        Wallet wallet = entityManager.find(Wallet.class, walletId, LockModeType.PESSIMISTIC_READ);
+        if (wallet == null){
+            throw new WalletNotFoundException("Wallet with id " + walletId + " not found.");
+        }
+        return wallet.getBalance();
     }
 }

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-wallet
+      author: Maksim
+      changes:
+        - createTable:
+            tableName: wallet
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: balance
+                  type: decimal(19,2)
